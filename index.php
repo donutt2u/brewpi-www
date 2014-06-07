@@ -94,7 +94,18 @@ function prepareJSON($input) {
 		<script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>
 		<script type="text/javascript" src="js/jquery-ui-timepicker-addon.js"></script>
 		<script type="text/javascript" src="js/spin.js"></script>
-		<script type="text/javascript" src="js/dygraph-combined.js"></script>
+		<?php
+		    $dygraphDev = false;
+		    if(!$degraphDev){
+		        // Load minified version of dygraph, for development
+                echo '<script type="text/javascript" src="js/dygraph-combined.js"></script>';
+		    }
+		    else{
+		        //  Load dygraph from submodule, for development
+		        echo '<script type="text/javascript" src="js/dygraphs/dygraph-dev.js"></script>';
+		    }
+		 ?>
+
 		<script type="text/javascript">
 			// pass parameters to JavaScript
 			window.tempFormat = <?php echo "'$tempFormat'" ?>;
