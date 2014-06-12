@@ -289,14 +289,33 @@ function addToConfigString(configString, key, value) {
 
 function getDeviceConfigString(deviceNr) {
     "use strict";
-    var $pinSelect, $pinSpan, configString, $deviceContainer;
+    var $pinSelect, $pinSpan, deviceSlot, configString, $deviceContainer, deviceFunction;
     configString = "{";
     $deviceContainer = $("#device-" + deviceNr.toString());
 
-    configString = addToConfigString(configString, "i", $deviceContainer.find(".device-slot select").val());
-    configString = addToConfigString(configString, "c", $deviceContainer.find(".chamber select").val());
-    configString = addToConfigString(configString, "b", $deviceContainer.find(".beer select").val());
-    configString = addToConfigString(configString, "f", $deviceContainer.find(".function select").val());
+    deviceSlot = $deviceContainer.find(".device-slot select").val();
+    if (deviceSlot === undefined) {
+        // did not find select, must be span
+        deviceSlot = $deviceContainer.find(".device-slot span.device-slot").text();
+    }
+    configString = addToConfigString(configString, "i", deviceSlot);
+    deviceFunction = $deviceContainer.find(".function select").val();
+    configString = addToConfigString(configString, "f", deviceFunction);
+
+    // assign chamber 1 automatically until we support multi-chamber
+    // configString = addToConfigString(configString, "c", $deviceContainer.find(".chamber select").val());
+    configString = addToConfigString(configString, "c", 1);
+
+    // assign beer automatically to chamber device or beer 1 until we support multi-beer
+    // configString = addToConfigString(configString, "b", $deviceContainer.find(".beer select").val());
+    if (deviceFunction >= 1 && deviceFunction <= 8) {
+        // chamber function, set as chamber device automatically
+        configString = addToConfigString(configString, "b", 0);
+    } else if (deviceFunction >= 9 && deviceFunction <= 15) {
+        // beer function, assign beer 1 automatically until we support multi-beer
+        configString = addToConfigString(configString, "b", 1);
+    }
+
     configString = addToConfigString(configString, "h", valFromListText(getDeviceHwTypeList(), $deviceContainer.find("span.hardware-type").text()));
 
     $pinSpan = $deviceContainer.find("span.arduino-pin"); // pre-defined devices have a span
@@ -367,6 +386,8 @@ function addDeviceToDeviceList(device, pinList, installed, fullPinList) {
             $deviceSlot
         ));
     }
+    /* remove option for chamber and beer assignment until we support multi-beer / multi-chamber
+
     if ((device.c !== undefined)) {
         $settings.append(generateDeviceSettingContainer(
             "Assigned to",
@@ -381,6 +402,8 @@ function addDeviceToDeviceList(device, pinList, installed, fullPinList) {
             generateSelect(getDeviceBeerList(), device.b)
         ));
     }
+
+    */
 
     if ((device.h !== undefined)) {
         $settings.append(generateDeviceSettingContainer(
