@@ -164,6 +164,30 @@ function getDeviceSlotList() {
     return list;
 }
 
+function getUsedDeviceSlotList() {
+    "use strict";
+    var j, usedSlotList = [];
+    for (j = 0; j < deviceList.installed.length; j += 1) {
+        usedSlotList.push(deviceList.installed[j].i);
+    }
+    return usedSlotList;
+}
+
+function getFreeDeviceSlotList() {
+    "use strict";
+    var listFull, listUsed, listFree, j;
+    listFull = getDeviceSlotList();
+    listUsed = getUsedDeviceSlotList();
+    listFree = [];
+    for (j = 0; j < listFull.length; j += 1) {
+        if (listUsed.indexOf(listFull[j].val) === -1) {
+            // slot is not found in used slots
+            listFree.push(listFull[j]); // add free slot to list
+        }
+    }
+    return listFree;
+}
+
 function getDeviceChamberList() {
     "use strict";
     var i, maxChambers, list;
@@ -200,13 +224,20 @@ function getDeviceBeerList() {
  return list;
  } */
 
-function generateSelect(list, selected) {
+function generateSelect(list, selected, disableOthers) {
     "use strict";
     var sel = $('<select>');
     $(list).each(function () {
         sel.append($("<option>").attr('value', this.val).text(this.text));
     });
     sel.val(selected);
+    if (disableOthers === "all") {
+        sel.find("option:not(:selected)").attr("disabled", "disabled");
+    } else if ($.isArray(disableOthers)) {
+        $.each(disableOthers, function (index, value) {
+            sel.find('option[value="' + value.toString() + '"]').attr("disabled", "disabled");
+        });
+    }
     return sel;
 }
 
@@ -279,8 +310,8 @@ function getDeviceConfigString(deviceNr) {
     configString = addToConfigString(configString, "a", $deviceContainer.find("span.onewire-address").text());
     configString = addToConfigString(configString, "n", $deviceContainer.find(".ds2413-pin select").val());
 
-    //configString = addToConfigString(configString,"d", 0); // hardwire deactivate for now
-    //configString = addToConfigString(configString,"j", 0); // hardwire calibration for now
+    configString = addToConfigString(configString, "d", 0); // hardwire deactivate for now
+    configString = addToConfigString(configString, "j", 0); // hardwire calibration for now
 
     configString += "}";
     return configString;
@@ -295,10 +326,10 @@ function applyDeviceSettings(deviceNr) {
     $("#device-console").find("span").append("Device config command sent, U:" + configString + "<br>");
 }
 
-function addDeviceToDeviceList(device, pinList, addManual) {
+function addDeviceToDeviceList(device, pinList, installed, fullPinList) {
     "use strict";
-    // addManual is an optional argument that makes pin and function fully selectable (except onewire)
-    var $settings, $applyButton, $newDevice, $nameAndApply, address, pinSpec, value;
+    // fullPinList is an optional argument that makes pin and function fully selectable (except onewire)
+    var $settings, $applyButton, $newDevice, $nameAndApply, address, pinSpec, value, $deviceSlot;
 
     $newDevice = $("<div class='device-container' id='device-" + device.nr.toString() + "'></div>");
     // add the device to the device list div
@@ -322,10 +353,18 @@ function addDeviceToDeviceList(device, pinList, addManual) {
     $settings.appendTo($newDevice);
 
     if ((device.i !== undefined)) {
+        if (installed) {
+            // display span
+            $deviceSlot = spanFromListVal(getDeviceSlotList(), device.i, 'device-slot');
+        } else {
+            // display select, disable used slots
+            $deviceSlot = generateSelect(getDeviceSlotList(), device.i, getUsedDeviceSlotList());
+        }
+
         $settings.append(generateDeviceSettingContainer(
             "Device slot",
             "device-slot",
-            generateSelect(getDeviceSlotList(), device.i)
+            $deviceSlot
         ));
     }
     if ((device.c !== undefined)) {
@@ -381,7 +420,7 @@ function addDeviceToDeviceList(device, pinList, addManual) {
         ));
     }
 
-    if (addManual) {
+    if (fullPinList) {
         pinSpec = {'val': -1, 'type': 'free'};
         $settings.append(generateDeviceSettingContainer(
             "Arduino Pin",
@@ -446,7 +485,7 @@ function addDeviceToDeviceList(device, pinList, addManual) {
     }
 }
 
-function parseDeviceList(deviceList, pinList) {
+function parseDeviceList(deviceList, pinList, installed) {
     "use strict";
     // output is just for testing now
     var i, device, output, devicesInListAlready;
@@ -458,7 +497,7 @@ function parseDeviceList(deviceList, pinList) {
         output += "Parsing device: ";
         output += JSON.stringify(device);
         output += '<br>';
-        addDeviceToDeviceList(device, pinList);
+        addDeviceToDeviceList(device, pinList, installed);
     }
     return output;
 }
@@ -466,7 +505,7 @@ function parseDeviceList(deviceList, pinList) {
 function addNewDevice() {
     "use strict";
     var device = {'c': 0, 'b': 0, 'd': 0, 'f': 0, 'i': -1, 'h': 1, 'p': -1, 't': 0, 'x': 0, 'nr': $("div.device-list div.device-container").length};
-    addDeviceToDeviceList(device, pinList, true);
+    addDeviceToDeviceList(device, pinList, false, true);
     //refreshDeviceList();
     console.log(deviceList);
 }
@@ -485,7 +524,7 @@ function getDeviceList() {
             $deviceList = $(".device-list");
             $deviceConsole = $("#device-console").find("span");
 
-            if (strippedResponse === "device-list-not-up-to-date") {
+            if (strippedResponse !== "device-list-not-up-to-date") {
                 $deviceConsole.find("span").append("<br>Updated device list received<br>");
                 jsonParsed = false;
                 try {
@@ -504,7 +543,7 @@ function getDeviceList() {
                         $deviceList.append("<span class='device-list-empty-text'>None</span>");
                     } else {
                         $deviceConsole.append("Parsing installed devices<br>");
-                        console.log("Parsing installed devices: " + parseDeviceList(deviceList.installed, pinList));
+                        console.log("Parsing installed devices: " + parseDeviceList(deviceList.installed, pinList, true));
                     }
                     $deviceList.append("<span class='device-list-header'>Detected devices</span>");
                     if (deviceList.available.length === 0) {
@@ -512,7 +551,7 @@ function getDeviceList() {
                         $('.device-list').append("<span class='device-list-empty-text'>No additional devices found</span>");
                     } else {
                         $deviceConsole.append("Parsing available devices<br>");
-                        console.log("Parsing available devices: " + parseDeviceList(deviceList.available, pinList));
+                        console.log("Parsing available devices: " + parseDeviceList(deviceList.available, pinList, false));
                     }
                     // add new device button to device list container if it does not exist already
                     if ($("button.add-new-device").length < 1) {
