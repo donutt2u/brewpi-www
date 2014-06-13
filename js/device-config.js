@@ -283,6 +283,32 @@ function generateDeviceSettingContainer(name, className, content) {
     return $settingContainer;
 }
 
+function disconnectedSensorPopUp() {
+    "use strict";
+    var popupContent = "<div>" +
+        "Looks like an installed sensor cannot be found. Check your wiring: <br> " +
+        "<ol>" +
+        "<li> Pull gently on each wire at all of your OneWire connectors to see if they are loose.</li>" +
+        "<li> Check that you don't have the cable isolation screwed in with the copper strands.</li>" +
+        "<li> If a temperature sensor disconnects when you read a value, your 5V line is disconnected.</li>" +
+        "<li> A bad sensor can sometimes take down all sensors on the bus. Try connecting the sensors one at a time.</li>" +
+        "<li> A bad or unsufficient power supply can cause sensors to fail. A cheap or thin USB cable can be a problem too.</li>" +
+        "</ol>" +
+        "</div>";
+    $(popupContent).dialog({
+        modal: true,
+        title: "Disconnected sensor help",
+        buttons: [
+            {
+                text: "Got it",
+                click: function () {
+                    $(this).dialog("close");
+                }
+            }
+        ],
+        width: "auto"
+    });
+}
 function addToConfigString(configString, key, value) {
     "use strict";
     var newConfigString = configString;
@@ -345,19 +371,10 @@ function getDeviceConfigString(deviceNr) {
     return configString;
 }
 
-function applyDeviceSettings(deviceNr) {
-    "use strict";
-    var configString = getDeviceConfigString(deviceNr);
-
-    $.post('socketmessage.php', {messageType: "applyDevice", message: configString});
-
-    $("#device-console").find("span").append("Device config command sent, U:" + configString + "<br>");
-}
-
 function addDeviceToDeviceList(device, pinList, installed, fullPinList) {
     "use strict";
     // fullPinList is an optional argument that makes pin and function fully selectable (except onewire)
-    var $settings, $applyButton, $newDevice, $nameAndApply, address, pinSpec, value, $deviceSlot;
+    var $settings, $applyButton, $newDevice, $nameAndApply, address, pinSpec, value, $deviceSlot, valueText, $valueSpan;
 
     $newDevice = $("<div class='device-container' id='device-" + device.nr.toString() + "'></div>");
     // add the device to the device list div
@@ -445,11 +462,12 @@ function addDeviceToDeviceList(device, pinList, installed, fullPinList) {
             // device is configured as first device on bus. Address is 16 zeros.
             address = "First on bus";
         }
-        $settings.append(generateDeviceSettingContainer(
+        $valueSpan = generateDeviceSettingContainer(
             "OneWire Address",
             "onewire-address",
             "<span class='onewire-address device-setting'>" + address + "</span>"
-        ));
+        );
+        $settings.append($valueSpan);
     }
 
     if (fullPinList) {
@@ -501,19 +519,26 @@ function addDeviceToDeviceList(device, pinList, installed, fullPinList) {
         if (parseInt(device.t, 10) === 3) {
             // Device type is switch actuator
             if (value === 0) {
-                value = "Inactive";
+                value = "OFF";
             } else if (value === 1) {
-                value = "Active";
+                value = "ON";
             }
+        } else if (value === null) {
+            valueText = '<a href="#" title="Click for help">Disconnected</a>';
+        } else {
+            valueText = value.toString();
         }
-        if (value === null) {
-            value = "Disconnected";
-        }
-        $settings.append(generateDeviceSettingContainer(
+        $valueSpan = $settings.append(generateDeviceSettingContainer(
             "Value",
             "device-value",
-            "<span class='device-value device-setting'>" + value + "</span>"
+            "<span class='device-value device-setting'>" + valueText + "</span>"
         ));
+        if (value === null) {
+            $valueSpan.click(function () {
+                disconnectedSensorPopUp();
+                return false; // prevent browser from following link.
+            });
+        }
     }
 }
 
@@ -641,10 +666,21 @@ function refreshDeviceList() {
     deviceListTimeout = setTimeout(getDeviceList, deviceListRequestTime);
 }
 
+function applyDeviceSettings(deviceNr) {
+    "use strict";
+    var configString = getDeviceConfigString(deviceNr);
+
+    $.post('socketmessage.php', {messageType: "applyDevice", message: configString});
+
+    $("#device-console").find("span").append("Device config command sent, U:" + configString + "<br>");
+    refreshDeviceList();
+}
+
 function initDeviceConfiguration() {
     "use strict";
     $(".refresh-device-list").button({icons: {primary: "ui-icon-refresh" } }).click(refreshDeviceList);
 }
+
 
 $(document).ready(function () {
     "use strict";
