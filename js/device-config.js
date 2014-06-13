@@ -82,7 +82,7 @@ function getDeviceFunctionList() {
     "use strict";
     // currently unsupported/unused devices commented out
     return [
-        {val: 0, text: 'None'},
+        {val: 0, text: 'Not installed'},
         {val: 1, text: 'Chamber Door'},
         {val: 2, text: 'Chamber Heater'},
         {val: 3, text: 'Chamber Cooler'},
@@ -141,7 +141,7 @@ function getLimitedPinList(pinList, pinTypes) {
     "use strict";
     var i, list;
     list = [
-        {val: 0, text: 'Unassigned'}
+        {val: 0, text: 'Not installed'}
     ];
     for (i = 0; i < pinList.length; i += 1) {
         if (-1 !== $.inArray(pinList[i].type, pinTypes)) {
@@ -156,7 +156,7 @@ function getDeviceSlotList() {
     var i, maxDevices, list;
     maxDevices = 15;
     list = [
-        {val: -1, text: 'Unassigned'}
+        {val: -1, text: 'Not installed'}
     ];
     for (i = 0; i <= maxDevices; i += 1) {
         list.push({val: i, text: i.toString()});
@@ -202,7 +202,7 @@ function getDeviceChamberList() {
     var i, maxChambers, list;
     maxChambers = 1;
     list = [
-        {val: 0, text: 'Unassigned'}
+        {val: 0, text: 'Not installed'}
     ];
     for (i = 1; i <= maxChambers; i += 1) {
         list.push({val: i, text: "Chamber " + i.toString()});
