@@ -173,6 +173,15 @@ function getUsedDeviceSlotList() {
     return usedSlotList;
 }
 
+function getUsedFunctionList() {
+    "use strict";
+    var j, usedFunctionList = [];
+    for (j = 0; j < deviceList.installed.length; j += 1) {
+        usedFunctionList.push(deviceList.installed[j].f);
+    }
+    return usedFunctionList;
+}
+
 function getFreeDeviceSlotList() {
     "use strict";
     var listFull, listUsed, listFree, j;
@@ -473,7 +482,7 @@ function addDeviceToDeviceList(device, pinList, installed, fullPinList) {
         $settings.append(generateDeviceSettingContainer(
             "Function",
             "function",
-            generateSelect(getLimitedFunctionList(pinSpec.type, device.h), device.f)
+            generateSelect(getLimitedFunctionList(pinSpec.type, device.h), device.f, getUsedFunctionList())
         ));
     }
 
