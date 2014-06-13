@@ -519,9 +519,9 @@ function addDeviceToDeviceList(device, pinList, installed, fullPinList) {
         if (parseInt(device.t, 10) === 3) {
             // Device type is switch actuator
             if (value === 0) {
-                value = "OFF";
+                valueText = "OFF";
             } else if (value === 1) {
-                value = "ON";
+                valueText = "ON";
             }
         } else if (value === null) {
             valueText = '<a href="#" title="Click for help">Disconnected</a>';
