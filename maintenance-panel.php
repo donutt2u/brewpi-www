@@ -79,8 +79,8 @@ function echoRotarySelect($optionName){
 					<input type="file" name="file" id="file" /> <!-- add max file size?-->
 				</div>
 				<div class="program-option">
-					<label for="boardType"> Board type:</label>
-					<select name="boardType">
+					<span>Board type:</span>
+					<select name="boardType" id="boardType">
 						<option value="leonardo">Leonardo</option>
 						<option value="uno">Uno</option>
 						<option value="atmega328">ATmega328 based</option>
@@ -90,17 +90,17 @@ function echoRotarySelect($optionName){
 					</select>
 				</div>
 				<div class="program-option">
-					<label for="restoreSettings">Restore old settings after programming</label>
-					<input type="radio" name="restoreSettings" value="true" checked>Yes
-					<input type="radio" name="restoreSettings" value="false">No
+					<span>Restore old settings after programming</span>
+					<input type="radio" name="restoreSettings" id="restoreSettings-yes" value="true" checked /><label for="restoreSettings-yes">Yes</label>
+					<input type="radio" name="restoreSettings" id="restoreSettings-no" value="false" /><label for="restoreSettings-no">No</label>
 				</div>
 				<div class="program-option">
-					<label for="restoreDevices">Restore installed devices after programming</label>
-					<input type="radio" name="restoreDevices" value="true" checked>Yes
-					<input type="radio" name="restoreDevices" value="false">No
+					<span>Restore installed devices after programming</span>
+					<input type="radio" name="restoreDevices" id="restoreDevices-yes" value="true" checked /><label for="restoreDevices-yes">Yes</label>
+					<input type="radio" name="restoreDevices" id="restoreDevices-no" value="false" /><label for="restoreDevices-no">No</label>
 				</div>
 			</div>
-			<input id="program-submit-button" type="submit" name="Program" value="Program">
+			<input id="program-submit-button" type="submit" name="Program" value="Program" />
 		</form>
 
 		<h3 id="program-stderr-header">Script stderr output will auto-refresh while programming if you keep this tab open</h3>
@@ -125,7 +125,7 @@ function echoRotarySelect($optionName){
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">Profile name:</span>
-			<input id="profile-name" value="<?php echo urldecode($profileName) ?>" size=30 type="text">
+			<input id="profile-name" value="<?php echo urldecode($profileName) ?>" size=30 type="text" />
 			<button class="apply-profile-name apply-button">Apply</button>
 		</div>
 		<div class="setting-container">
@@ -149,9 +149,9 @@ function echoRotarySelect($optionName){
 		<div class="help-panel">
 			<p>
 				The red values are control settings. The beer setting is set by the profile or constant. The fridge setting is set by PID or constant.
-				</br>
+				<br/>
 				The orange values are control variables. These are intermediate results of the fridge setting calculation.
-				</br>
+				<br/>
 				The blue values are constants, they never change automatically.
 			</p>
 		</div>
@@ -234,27 +234,27 @@ function echoRotarySelect($optionName){
 		<div class="setting-container">
 			<span class="setting-name">Beer Temperature Setting</span>
 			<span class="explanation">Beer temperature setting when in profile or beer constant mode. Use the control panel to adjust.</span>
-			<input type="text" name="beerSet" class="cs beerSet">
+			<input type="text" name="beerSet" class="cs beerSet" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">Fridge Temperature Setting</span>
 			<span class="explanation">Automatically adjust when in profile/beer constant mode. Use the control panel to adjust.</span>
-			<input type="text" name="fridgeSet" class="cs fridgeSet">
+			<input type="text" name="fridgeSet" class="cs fridgeSet" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">Cooling overshoot estimator</span>
 			<span class="explanation">This is a self learning estimator for the overshoot when turning the cooler off.
 			It is adjusted automatically, but you can set adjust it manually here. This does not stop further automatic adjustment.</span>
-			<input type="text" name="coolEst" class="cs coolEst">
+			<input type="text" name="coolEst" class="cs coolEst" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">Heating overshoot estimator</span>
 			<span class="explanation">This is a self learning estimator for the overshoot when turning the heater off.
 			It is adjusted automatically, but you can set adjust it manually here. This does not stop further automatic adjustment.</span>
-			<input type="text" name="heatEst" class="cs heatEst">
+			<input type="text" name="heatEst" class="cs heatEst" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 	</div>
@@ -278,13 +278,13 @@ function echoRotarySelect($optionName){
 		<div class="setting-container">
 			<span class="setting-name">Temperature setting minimum</span>
 			<span class="explanation">The fridge and beer temperatures cannot go below this value.</span>
-			<input type="text" name="tempSetMin" class="cc tempSetMin">
+			<input type="text" name="tempSetMin" class="cc tempSetMin" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">Temperature setting maximum</span>
 			<span class="explanation">The fridge and beer temperatures cannot go above this value.</span>
-			<input type="text" name="tempSetMax" class="cc tempSetMax">
+			<input type="text" name="tempSetMax" class="cc tempSetMax" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<span class="section-explanation">The fridge temperature is controlled with PID. The fridge setting = beer setting + PID.
@@ -295,79 +295,79 @@ function echoRotarySelect($optionName){
 		<div class="setting-container">
 			<span class="setting-name">PID: Kp</span>
 			<span class="explanation">The beer temperature error is multiplied by Kp to give the proportional part of the PID value.</span>
-			<input type="text" name="Kp" class="cc Kp">
+			<input type="text" name="Kp" class="cc Kp" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">PID: Ki</span>
 			<span class="explanation">When the integral is active, the error is added to the integral every 30 seconds. The result is multiplied by Ki to give the integral part.</span>
-			<input type="text" name="Ki" class="cc Ki">
+			<input type="text" name="Ki" class="cc Ki" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">PID: Kd</span>
 			<span class="explanation">The derivative of the beer temperature is multiplied by Kd to give the derivative part of the PID value.</span>
-			<input type="text" name="Kd" class="cc Kd">
+			<input type="text" name="Kd" class="cc Kd" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">PID: maximum</span>
 			<span class="explanation">You can define the maximum difference between the beer temp setting and fridge temp setting here. The fridge setting will be clipped to this range.</span>
-			<input type="text" name="pidMax" class="cc pidMax">
+			<input type="text" name="pidMax" class="cc pidMax" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">Integrator: maximum temp error &deg;<?php echo $tempFormat ?></span>
 			<span class="explanation">The integral is only active when the temperature is close to the target temperature. This is the maximum error for which the integral is active..</span>
-			<input type="text" name="iMaxErr" class="cc iMaxErr">
+			<input type="text" name="iMaxErr" class="cc iMaxErr" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">Temperature idle range top</span>
 			<span class="explanation">When the fridge temperature is within this range, it won't heat or cool, regardless of other settings.</span>
-			<input type="text" name="idleRangeH" class="cc idleRangeH">
+			<input type="text" name="idleRangeH" class="cc idleRangeH" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">Temperature idle range bottom</span>
 			<span class="explanation">When the fridge temperature is within this range, it won't heat or cool, regardless of other settings.</span>
-			<input type="text" name="idleRangeL" class="cc idleRangeL">
+			<input type="text" name="idleRangeL" class="cc idleRangeL" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">Heating target upper bound</span>
 			<span class="explanation">When the overshoot lands under this value, the peak is within target range and the estimator is not adjusted.</span>
-			<input type="text" name="heatTargetH" class="cc heatingTargetH">
+			<input type="text" name="heatTargetH" class="cc heatingTargetH" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">Heating target lower bound</span>
 			<span class="explanation">When the overshoot lands above this value, the peak is within target range and the estimator is not adjusted.</span>
-			<input type="text" name="heatTargetL" class="cc heatingTargetL">
+			<input type="text" name="heatTargetL" class="cc heatingTargetL" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">Cooling target upper bound</span>
 			<span class="explanation">When the overshoot lands under this value, the peak is within target range and the estimator is not adjusted.</span>
-			<input type="text" name="coolTargetH" class="cc coolingTargetH">
+			<input type="text" name="coolTargetH" class="cc coolingTargetH" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">Cooling target lower bound</span>
 			<span class="explanation">When the overshoot lands above this value, the peak is within target range and the estimator is not adjusted.</span>
-			<input type="text" name="coolTargetL" class="cc coolingTargetL">
+			<input type="text" name="coolTargetL" class="cc coolingTargetL" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">Maximum time in seconds for heating overshoot estimator</span>
 			<span class="explanation">The time the fridge has been heating is used to estimate overshoot. This is the maximum time that is taken into account.</span>
-			<input type="text" name="maxHeatTimeForEst" class="cc maxHeatTimeForEst">
+			<input type="text" name="maxHeatTimeForEst" class="cc maxHeatTimeForEst" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
 			<span class="setting-name">Maximum time in seconds for cooling overshoot estimator</span>
 			<span class="explanation">The time the fridge has been cooling is used to estimate overshoot. This is the maximum time that is taken into account.</span>
-			<input type="text" name="maxCoolTimeForEst" class="cc maxCoolTimeForEst">
+			<input type="text" name="maxCoolTimeForEst" class="cc maxCoolTimeForEst" />
 			<button class="send-button">Send to Arduino</button>
 		</div>
 		<div class="setting-container">
@@ -430,7 +430,7 @@ function echoRotarySelect($optionName){
 		<span class='container-title'>Device List</span>
 		<div class="refresh-options-container">
 			<div class="refresh-option">
-				<input type="checkbox" name="read-values" id="read-values"/><label for="read-values">Read values</label>
+				<input type="checkbox" name="read-values" id="read-values" /><label for="read-values">Read values</label>
 			</div>
 		</div>
 		<button class="refresh-device-list">Refresh device list</button>

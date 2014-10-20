@@ -309,6 +309,7 @@ function disconnectedSensorPopUp() {
         width: "auto"
     });
 }
+
 function addToConfigString(configString, key, value) {
     "use strict";
     var newConfigString = configString;
@@ -318,6 +319,98 @@ function addToConfigString(configString, key, value) {
         }
 
         newConfigString += "\"" + key + "\"" + ":" + "\"" + value + "\"";
+    }
+    return newConfigString;
+}
+
+function calibrationDialog() {
+    "use strict";
+
+    var $popupContent, $calibrateSensorList;
+    $popupContent = $(
+        "<div id='calibration-dialog' style='display: none;'> " +
+            "    <span>To calibrate your temperature sensors, put all of them in (ice) water, bundled together.<br>" +
+            "    Use the buttons below to adjust their offset so they report the same value. </span> " +
+            "</div>"
+    );
+    $calibrateSensorList = $("<div class='calibrate-sensor-list'></div>");
+    $calibrateSensorList.append("<div class='calibrate-sensor-list-header'>" +
+        "<span class='sensor-slot'>Slot</span>" +
+        "<span class='sensor-value'>Raw value</span>" +
+        "<span class='sensor-offset'>Offset</span>" +
+        "<span class='sensor-calibrated-value'>Calibrated value</span>" +
+        "<span class='sensor-function'>Function</span>" +
+        "<span class='sensor-address'>Address</span>" +
+        "</div>");
+    $calibrateSensorList.appendTo($popupContent);
+    $($popupContent).dialog({
+        modal: true,
+        title: "Calibrate Temperature Sensors",
+        buttons: [
+            {
+                text: "Done",
+                click: function () {
+                    $(this).dialog("close");
+                }
+            }
+        ],
+        width: "auto"
+    });
+
+    function reloadCalibrationSensorList() {
+        $('#read-values').attr('checked', true); // enable reading values if it was not enabled.
+        refreshDeviceList();
+
+        function adjustOffset($button, diff) {
+            /*global tempFormat*/
+            var $span, val;
+            $span = $button.siblings(".sensor-offset");
+            val = parseFloat($span.text());
+            if (tempFormat === "F") {
+                val = Math.round(16 * (val * 5 / 9) + diff) / 16 * 9 / 5; // sensor resolution is 1/16th
+                if (val > 14.3 || val < -14.3) {
+                    return;
+                }
+            } else {
+                val = Math.round(16 * val + diff) / 16;
+                if (val > 7.95 || val < -7.95) {
+                    return;
+                }
+            }
+            $span.text(((val > 0) ? "+" : "") + val.toFixed(2));
+        }
+
+        $(".device-list .calibration-offset").each(function () {
+            var sensorOffset, sensorAddress, sensorFunction, sensorSlot, sensorValue, $sensorInCalibrateList, $sensorInDeviceList, $offsetDiv;
+            $sensorInDeviceList = $(this).parent();
+            $sensorInCalibrateList = $('<div class="sensor-calibrate"></div>');
+            sensorSlot = $sensorInDeviceList.find("span.device-setting.device-slot").text();
+            sensorFunction = $sensorInDeviceList.find(".function select option:selected").text();
+            sensorAddress = $sensorInDeviceList.find("span.device-setting.onewire-address").text();
+            sensorValue = $sensorInDeviceList.find("span.device-setting.device-value").text();
+
+            if (parseInt(sensorSlot, 10) >= 0) { // valid installed sensor
+                sensorOffset = $sensorInDeviceList.find(".calibration-offset a").text();
+                $sensorInCalibrateList.append('<span class="sensor-slot">' + sensorSlot + '</span>');
+                $sensorInCalibrateList.append("<span class='sensor-value'>" + sensorValue + "</span>");
+                var $buttonMin = $('<button class="min">-</button>').appendTo($sensorInCalibrateList);
+                $sensorInCalibrateList.append('<span class="sensor-offset">' + sensorOffset + '</span>');
+                var $buttonPlus = $('<button class="plus">+</button>').appendTo($sensorInCalibrateList);
+                $buttonPlus.click(function () { adjustOffset($(this), +1); });
+                $buttonMin.click(function () { adjustOffset($(this), -1); });
+                var calibratedSensorValue = (parseFloat(sensorValue) + parseFloat(sensorOffset));
+                if (isNaN(calibratedSensorValue)) {
+                    calibratedSensorValue = "";
+                } else {
+                    calibratedSensorValue = calibratedSensorValue.toFixed(2);
+                }
+
+                $sensorInCalibrateList.append('<span class="sensor-calibrated-value">' + calibratedSensorValue + '</span>');
+                $sensorInCalibrateList.append("<span class='sensor-function'>" + sensorFunction + "</span>");
+                $sensorInCalibrateList.append("<span class='sensor-address'>" + sensorAddress + "</span>");
+                $sensorInCalibrateList.appendTo($calibrateSensorList);
+            }
+        });
     }
     return newConfigString;
 }

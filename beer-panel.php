@@ -17,14 +17,16 @@
  */
 ?>
 <div id="top-bar" class="ui-widget ui-widget-header ui-corner-all">
-	<div id="lcd" class="lcddisplay"><span class="lcd-text">
-		<span class="lcd-line" id="lcd-line-0">Live LCD waiting</span>
-		<span class="lcd-line" id="lcd-line-1">for update from</span>
-		<span class="lcd-line" id="lcd-line-2">script...</span>
-		<span class="lcd-line" id="lcd-line-3"></span>
+	<div id="lcd" class="lcddisplay">
+		<span class="lcd-text">
+			<span class="lcd-line" id="lcd-line-1">Live LCD waiting</span>
+			<span class="lcd-line" id="lcd-line-1">for update from</span>
+			<span class="lcd-line" id="lcd-line-2">script...</span>
+			<span class="lcd-line" id="lcd-line-3"></span>
+		</span>
 	</div>
 	<div id="logo-container">
-		<img src="brewpi_logo.png">
+		<img src="brewpi_logo.png" alt="brewpi-logo">
 		<div id=beer-name-container>
 			<span>Fermenting: </span><a href='#' id="beer-name"><?php echo urldecode($beerName);?></a>
 			<span class="data-logging-state"></span>

@@ -780,3 +780,14 @@ button.chart-error-refresh{
 .ui-timepicker-rtl dl dd { margin: 0 65px 10px 10px; }
 
 .chart-placeholder{ display: block; margin-top:100px; width: 100%; text-align: center;}
+
+.sensor-calibrate {margin: 20px 0;}
+.calibrate-sensor-list-header {font-weight: bold;}
+.calibrate-sensor-list span, .sensor-calibrate button {float: left;}
+.calibrate-sensor-list span { margin: 10px 10px; float: left;}
+.calibrate-sensor-list span.sensor-slot{ clear: left; width: 20px;}
+.calibrate-sensor-list span.sensor-function { width: 110px;}
+.calibrate-sensor-list span.sensor-address { width: 130px;}
+.calibrate-sensor-list span.sensor-value { width: 100px;}
+.calibrate-sensor-list span.sensor-calibrated-value { width: 100px;}
+
