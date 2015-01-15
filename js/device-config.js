@@ -412,7 +412,8 @@ function calibrationDialog() {
             }
         });
     }
-    return newConfigString;
+//    TODO!!
+    console("error! TODO")
 }
 
 function getDeviceConfigString(deviceNr) {
